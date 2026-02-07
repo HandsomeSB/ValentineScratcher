@@ -314,8 +314,6 @@ export default function GamePage() {
       <AnnouncementModal
         isOpen={showAnnouncement}
         isWin={activeCard?.isWin || false}
-        yourNumber={activeCard?.yourNumber || 0}
-        prizeNumbers={activeCard?.prizeNumbers || []}
         newWord={
           activeCard?.isWin && gameState
             ? gameState.collectedWords[gameState.collectedWords.length - 1]

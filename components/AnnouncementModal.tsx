@@ -3,8 +3,6 @@
 interface AnnouncementModalProps {
   isOpen: boolean;
   isWin: boolean;
-  yourNumber: number;
-  prizeNumbers: number[];
   newWord?: string;
   onNewCard: () => void;
   isGameComplete: boolean;
@@ -13,8 +11,6 @@ interface AnnouncementModalProps {
 export default function AnnouncementModal({
   isOpen,
   isWin,
-  yourNumber,
-  prizeNumbers,
   newWord,
   onNewCard,
   isGameComplete,
@@ -23,25 +19,16 @@ export default function AnnouncementModal({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center p-4 modal-backdrop"
+      className="fixed inset-0 flex items-center justify-center p-4! modal-backdrop"
       style={{ backgroundColor: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(4px)', zIndex: 200 }}
     >
       <div
-        className={`announcement-popup p-6 ${isWin ? 'result-win' : 'result-lose'}`}
+        className={`announcement-popup p-6! ${isWin ? 'result-win' : 'result-lose'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <p className={`text-xl font-semibold mb-4 ${isWin ? 'text-emerald-600' : 'text-red-600'}`}>
           {isWin ? 'You Won a Word!' : 'No Match — Try Again'}
         </p>
-
-        <div className="mb-5 space-y-1 text-sm text-zinc-600">
-          <p>
-            Your Number: <span className="font-semibold">{yourNumber}</span>
-          </p>
-          <p>
-            Prize Numbers: <span className="font-semibold">{prizeNumbers.join(', ')}</span>
-          </p>
-        </div>
 
         {isWin && newWord && (
           <p className="text-sm font-medium text-rose-600 mb-5">

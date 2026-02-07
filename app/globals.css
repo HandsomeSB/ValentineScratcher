@@ -31,8 +31,6 @@
    BASE STYLES
    ============================================ */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
@@ -444,7 +442,7 @@ input.form-input[readonly] {
 
 /* Entering animation - starts from top, slides to center */
 .game-card-entering {
-  animation: cardSlideIn 0.45s ease-out 0.1s forwards;
+  animation: cardSlideIn 0.46s ease-out 0.05s forwards;
   transform: translate3d(-50%, -200%, 0);
   opacity: 0;
 }

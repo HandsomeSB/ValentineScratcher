@@ -15,7 +15,7 @@ export const GAME_CONFIG = {
 
   // Number generation
   MIN_NUMBER: 1,
-  MAX_NUMBER: 15,
+  MAX_NUMBER: 10,
   PRIZE_COUNT: 6, // Number of prize numbers
 
   // Visual
