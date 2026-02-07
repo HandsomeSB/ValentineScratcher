@@ -6,7 +6,7 @@
 
 export const GAME_CONFIG = {
   // Scratcher mechanics
-  SCRATCH_THRESHOLD: 0.5, // 50% of area must be scratched to reveal
+  SCRATCH_THRESHOLD: 0.4, // 40% of area must be scratched to reveal
   SCRATCH_RADIUS: 20, // Pixel radius of scratch brush
 
   // Canvas dimensions

@@ -444,17 +444,19 @@ input.form-input[readonly] {
 
 /* Entering animation - starts from top, slides to center */
 .game-card-entering {
-  animation: cardSlideIn 0.5s ease-out forwards;
+  animation: cardSlideIn 0.45s ease-out 0.1s forwards;
+  transform: translate3d(-50%, -200%, 0);
+  opacity: 0;
 }
 
 @keyframes cardSlideIn {
   from {
+    transform: translate3d(-50%, -200%, 0);
     opacity: 0;
-    transform: translate(-50%, -200%);
   }
   to {
+    transform: translate3d(-50%, -50%, 0);
     opacity: 1;
-    transform: translate(-50%, -50%);
   }
 }
 
@@ -462,7 +464,7 @@ input.form-input[readonly] {
 .game-card-stacked {
   transform: translate(calc(-50% - 500px - 4rem + var(--stack-index, 0) * 8px),
                        calc(-50% + var(--stack-index, 0) * 8px));
-  z-index: calc(50 - var(--stack-index, 0));
+  z-index: var(--stack-index, 0);
   opacity: 1;
   pointer-events: none;
 }
