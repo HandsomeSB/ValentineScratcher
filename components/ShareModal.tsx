@@ -27,63 +27,56 @@ export default function ShareModal({ isOpen, message, onClose, onReset, onNewMes
   };
 
   const handleShareTwitter = () => {
-    const text = encodeURIComponent(`I just revealed a secret message: "${message}" 💝`);
+    const text = encodeURIComponent(`I just revealed a secret message: "${message}"`);
     const url = typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : '';
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-enter"
-      style={{ backgroundColor: 'rgba(136, 14, 79, 0.8)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop"
+      style={{ backgroundColor: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-3xl p-8 sm:p-12 max-w-lg w-full text-center shadow-2xl modal-content-enter"
+        className="card p-8 sm:p-10 max-w-md w-full text-center modal-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-4xl font-bold mb-6" style={{ color: 'var(--valentine-dark-red)' }}>
-          🎉 Congratulations! 🎉
+        <h2 className="font-display text-3xl font-semibold text-rose-800 mb-6">
+          Congratulations!
         </h2>
 
         <div className="mb-8">
-          <p className="text-sm font-semibold mb-3" style={{ color: 'var(--valentine-red)' }}>
-            You've revealed the complete message:
+          <p className="text-sm text-zinc-500 mb-4">
+            You&apos;ve revealed the complete message:
           </p>
-          <p className="text-2xl font-bold italic px-4 py-6 rounded-xl" style={{
-            color: 'var(--valentine-dark-red)',
-            backgroundColor: 'var(--valentine-lavender)'
-          }}>
-            "{message}"
+          <p className="font-display text-lg text-rose-700 italic px-5 py-6 rounded-2xl bg-rose-50">
+            &ldquo;{message}&rdquo;
           </p>
         </div>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-8">
           <button
             onClick={handleShareTwitter}
-            className="w-full px-6 py-3 rounded-lg font-semibold transition-colors"
-            style={{
-              backgroundColor: '#1DA1F2',
-              color: 'white'
-            }}
+            className="btn w-full bg-sky-500 text-white hover:bg-sky-600"
           >
             Share on Twitter
           </button>
 
           <button
             onClick={handleCopyLink}
-            className="btn-secondary w-full"
+            className="btn btn-secondary w-full"
           >
-            {copied ? '✓ Link Copied!' : 'Copy Link'}
+            {copied ? 'Link Copied!' : 'Copy Link'}
           </button>
         </div>
 
-        <div className="flex gap-3 justify-center pt-4 border-t" style={{ borderColor: 'var(--valentine-pink)' }}>
-          <button onClick={onReset} className="btn-secondary px-6">
+        <div className="flex gap-3 justify-center pt-6 border-t border-zinc-200">
+          <button onClick={onReset} className="btn btn-secondary">
             Play Again
           </button>
-          <button onClick={onNewMessage} className="btn-primary px-6">
-            Create New Message
+          <button onClick={onNewMessage} className="btn btn-primary">
+            Create New
           </button>
         </div>
       </div>

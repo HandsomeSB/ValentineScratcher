@@ -9,6 +9,8 @@ export default function MessageInput() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
 
+  const wordCount = message.trim() ? message.trim().split(/\s+/).length : 0;
+
   const handleGenerate = () => {
     setError('');
     setCopied(false);
@@ -18,7 +20,7 @@ export default function MessageInput() {
       return;
     }
 
-    if (message.trim().split(/\s+/).length < 3) {
+    if (wordCount < 3) {
       setError('Message should have at least 3 words');
       return;
     }
@@ -52,24 +54,25 @@ export default function MessageInput() {
   };
 
   return (
-    <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 sm:p-12">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: 'var(--valentine-dark-red)' }}>
-          💝 Valentine's Lottery Scratcher
+    <div className="card max-w-xl w-full p-8 sm:p-10">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold text-rose-800 mb-3">
+          Valentine&apos;s Scratcher
         </h1>
-        <p className="text-lg" style={{ color: 'var(--valentine-red)' }}>
-          Create a personalized lottery scratcher to reveal your message!
+        <p className="text-zinc-500 text-base">
+          Create a lottery scratcher to reveal your secret message
         </p>
       </div>
 
       <div className="space-y-6">
+        {/* Message Input */}
         <div>
           <label
             htmlFor="message"
-            className="block text-sm font-semibold mb-2"
-            style={{ color: 'var(--valentine-dark-red)' }}
+            className="block text-sm font-medium text-zinc-700 mb-2"
           >
-            Enter your message:
+            Your message
           </label>
           <textarea
             id="message"
@@ -77,75 +80,79 @@ export default function MessageInput() {
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Will you be my valentine?"
-            className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all resize-none"
-            style={{
-              borderColor: 'var(--valentine-pink)',
-            }}
+            className="form-textarea"
             rows={3}
             maxLength={200}
           />
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-sm text-gray-500">
-              {message.trim() ? message.trim().split(/\s+/).length : 0} words
-            </p>
-            <p className="text-sm text-gray-500">
-              {message.length}/200 characters
-            </p>
+          <div className="flex justify-between items-center mt-3 text-sm text-zinc-400">
+            <span className={wordCount >= 3 ? 'text-emerald-600 font-medium' : ''}>
+              {wordCount} {wordCount === 1 ? 'word' : 'words'}
+            </span>
+            <span>{message.length}/200</span>
           </div>
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="px-4 py-3 rounded-xl bg-red-50 border-2 border-red-500">
+            <p className="text-sm text-red-600 font-medium">{error}</p>
           </div>
         )}
 
+        {/* Generate Button */}
         <button
           onClick={handleGenerate}
-          className="btn-primary w-full"
+          className="btn btn-primary w-full"
         >
           Generate Link
         </button>
 
+        {/* Generated Link */}
         {generatedLink && (
-          <div className="space-y-3 p-4 rounded-lg" style={{ backgroundColor: 'var(--valentine-lavender)' }}>
-            <label
-              className="block text-sm font-semibold"
-              style={{ color: 'var(--valentine-dark-red)' }}
-            >
-              Your shareable link:
+          <div className="link-box space-y-4">
+            <label className="block text-sm font-medium text-zinc-700">
+              Your shareable link
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={generatedLink}
                 readOnly
-                className="flex-1 px-4 py-2 bg-white border-2 rounded-lg text-sm"
-                style={{ borderColor: 'var(--valentine-pink)' }}
+                className="form-input flex-1 text-sm"
               />
               <button
                 onClick={handleCopy}
-                className="btn-secondary px-6 whitespace-nowrap"
+                className="btn btn-secondary whitespace-nowrap"
               >
-                {copied ? '✓ Copied!' : 'Copy'}
+                {copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
-            <p className="text-sm text-gray-600">
-              Share this link with your valentine! They'll scratch lottery cards to reveal your message word by word.
+            <p className="text-sm text-zinc-500">
+              Share this link — they&apos;ll scratch cards to reveal your message word by word.
             </p>
           </div>
         )}
 
-        <div className="pt-4 border-t" style={{ borderColor: 'var(--valentine-pink)' }}>
-          <h3 className="font-semibold mb-2" style={{ color: 'var(--valentine-dark-red)' }}>
-            How it works:
+        {/* Instructions */}
+        <div className="divider" />
+
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-700 mb-4">
+            How it works
           </h3>
-          <ol className="space-y-2 text-sm text-gray-700">
-            <li>1. Enter your message above (at least 3 words)</li>
-            <li>2. Click "Generate Link" to create a unique URL</li>
-            <li>3. Share the link with your special someone</li>
-            <li>4. They scratch lottery cards - each win reveals one word</li>
-            <li>5. After collecting all words, your complete message is revealed!</li>
+          <ol className="space-y-3 text-sm text-zinc-600">
+            <li className="flex gap-4 items-start">
+              <span className="step-number">1</span>
+              <span>Enter your message (at least 3 words)</span>
+            </li>
+            <li className="flex gap-4 items-start">
+              <span className="step-number">2</span>
+              <span>Generate and share the unique link</span>
+            </li>
+            <li className="flex gap-4 items-start">
+              <span className="step-number">3</span>
+              <span>They scratch lottery cards — each win reveals a word</span>
+            </li>
           </ol>
         </div>
       </div>

@@ -19,21 +19,23 @@ export const GAME_CONFIG = {
   PRIZE_COUNT: 6, // Number of prize numbers
 
   // Visual
-  OVERLAY_COLOR: '#9E9E9E', // Gray scratch overlay
-  WIN_COLOR: '#4CAF50', // Green for winning cards
-  LOSE_COLOR: '#F44336', // Red for losing cards
+  OVERLAY_COLOR: '#d4d4d8', // Gray scratch overlay
+  WIN_COLOR: '#059669', // Green for winning cards
+  LOSE_COLOR: '#dc2626', // Red for losing cards
 
   // Audio (Web Audio API frequencies)
   SCRATCH_FREQUENCY: 80, // Hz for scratch sound
   WIN_FREQUENCY: 880, // Hz for win sound
   CELEBRATION_FREQUENCY: 1320, // Hz for celebration
 
-  // Valentine's theme colors
-  VALENTINE_RED: '#FF1744',
-  VALENTINE_PINK: '#F8BBD0',
-  VALENTINE_DARK_RED: '#880E4F',
-  VALENTINE_LAVENDER: '#FFF0F5',
-  VALENTINE_ACCENT: '#F50057',
+  // Rose theme colors
+  ROSE_50: '#fff1f2',
+  ROSE_100: '#ffe4e6',
+  ROSE_600: '#e11d48',
+  ROSE_700: '#be123c',
+  ROSE_800: '#9f1239',
+  VALENTINE_PINK: '#fecdd3',
+  VALENTINE_DARK_RED: '#9f1239',
 } as const;
 
 /**

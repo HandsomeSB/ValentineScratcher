@@ -1,34 +1,30 @@
 @import "tailwindcss";
 
 /* ============================================
-   VALENTINE'S THEME VARIABLES
+   THEME - Tailwind v4 Custom Theme
    ============================================ */
-:root {
-  --valentine-red: #FF1744;
-  --valentine-pink: #F8BBD0;
-  --valentine-dark-red: #880E4F;
-  --valentine-lavender: #FFF0F5;
-  --valentine-accent: #F50057;
-  --win-color: #4CAF50;
-  --lose-color: #F44336;
-  --scratch-overlay: #9E9E9E;
+@theme {
+  /* Rose palette */
+  --color-rose-50: #fff1f2;
+  --color-rose-100: #ffe4e6;
+  --color-rose-200: #fecdd3;
+  --color-rose-300: #fda4af;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+  --color-rose-700: #be123c;
+  --color-rose-800: #9f1239;
+  --color-rose-900: #881337;
 
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Semantic */
+  --color-success: #059669;
+  --color-success-light: #d1fae5;
+  --color-error: #dc2626;
+  --color-error-light: #fee2e2;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* Custom Valentine's colors */
-  --color-valentine-red: var(--valentine-red);
-  --color-valentine-pink: var(--valentine-pink);
-  --color-valentine-dark-red: var(--valentine-dark-red);
-  --color-valentine-lavender: var(--valentine-lavender);
-  --color-valentine-accent: var(--valentine-accent);
+  /* Fonts */
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
 }
 
 /* ============================================
@@ -40,113 +36,242 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: linear-gradient(135deg, #FFF0F5 0%, #F8BBD0 100%);
+  font-family: var(--font-body);
+  background: #fff1f2;
   min-height: 100vh;
-  color: var(--foreground);
+  color: #18181b;
+  line-height: 1.6;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ============================================
+   CARD CONTAINER
+   ============================================ */
+.card {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.04),
+    0 24px 48px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================
    SCRATCHER CARD STYLES
    ============================================ */
 .scratcher-canvas {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   display: block;
-  transition: border 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   touch-action: none;
+}
+
+.scratcher-canvas:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================
    WORD PILLS
    ============================================ */
 .word-pill {
-  background: linear-gradient(135deg, #FF1744, #F50057);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
+  display: inline-block;
+  background: #e11d48;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 100px;
   font-weight: 500;
-  font-size: 14px;
-  box-shadow: 0 2px 6px rgba(255, 23, 68, 0.3);
-  animation: fadeIn 0.5s ease;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  animation: pillIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes fadeIn {
+@keyframes pillIn {
   from {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.8) translateY(4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 /* ============================================
    BUTTON STYLES
    ============================================ */
-.btn-primary {
-  background: linear-gradient(135deg, #FF1744, #F50057);
-  color: white;
-  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.3);
-  padding: 12px 24px;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #e11d48;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 23, 68, 0.4);
+  background: #be123c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
 }
 
 .btn-primary:active {
   transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.2);
 }
 
 .btn-secondary {
-  background: #F8BBD0;
-  color: #880E4F;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background: #ffe4e6;
+  color: #be123c;
 }
 
 .btn-secondary:hover {
-  background: #F48FB1;
+  background: #fecdd3;
+}
+
+.btn-secondary:active {
+  background: #fda4af;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #52525b;
+  padding: 12px 20px;
+}
+
+.btn-ghost:hover {
+  background: #f4f4f5;
+  color: #27272a;
 }
 
 /* ============================================
-   MODAL ANIMATIONS
+   FORM ELEMENTS
    ============================================ */
+textarea.form-textarea,
+input.form-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 2px solid #e4e4e7;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #27272a;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+}
+
+textarea.form-textarea:focus,
+input.form-input:focus {
+  border-color: #fb7185;
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.15);
+}
+
+textarea.form-textarea::placeholder,
+input.form-input::placeholder {
+  color: #a1a1aa;
+}
+
+/* Read-only input */
+input.form-input[readonly] {
+  background: #fafafa;
+  cursor: default;
+}
+
+/* ============================================
+   PROGRESS BOX
+   ============================================ */
+.progress-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* ============================================
+   RESULT BOXES
+   ============================================ */
+.result-win {
+  background: #d1fae5;
+  border: 2px solid #059669;
+  border-radius: 16px;
+}
+
+.result-lose {
+  background: #fee2e2;
+  border: 2px solid #dc2626;
+  border-radius: 16px;
+}
+
+/* ============================================
+   LINK BOX
+   ============================================ */
+.link-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(16px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
-}
-
-.modal-enter {
-  animation: fadeIn 0.3s ease;
-}
-
-.modal-content-enter {
-  animation: slideUp 0.5s ease;
 }
 
 /* ============================================
@@ -163,11 +288,40 @@ body {
 }
 
 /* ============================================
+   STEP NUMBERS
+   ============================================ */
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffe4e6;
+  color: #e11d48;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+.divider {
+  height: 1px;
+  background: #e4e4e7;
+  margin: 24px 0;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
-@media (max-width: 480px) {
-  .scratcher-canvas {
-    width: 100%;
-    height: auto;
+@media (max-width: 640px) {
+  .card {
+    border-radius: 20px;
+  }
+
+  .btn {
+    padding: 14px 24px;
   }
 }

@@ -33,9 +33,7 @@ export default function GamePage() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  // Initialize game on mount
   useEffect(() => {
-    // Initialize audio on first interaction
     AudioManager.init();
 
     if (!encodedMessage) {
@@ -44,7 +42,6 @@ export default function GamePage() {
       return;
     }
 
-    // Validate and decode message
     if (!isValidEncodedMessage(encodedMessage)) {
       setError('Invalid message link');
       setIsLoading(false);
@@ -62,15 +59,12 @@ export default function GamePage() {
     const messageWords = decoded.trim().split(/\s+/);
     setWords(messageWords);
 
-    // Load or create game state
     const state = getOrCreateGameState(encodedMessage, messageWords.length);
     setGameState(state);
 
-    // Generate first card if not complete
     if (!state.isComplete) {
       generateNewCard();
     } else {
-      // Show completion modal if already complete
       setShowShareModal(true);
       setShowConfetti(true);
     }
@@ -95,10 +89,8 @@ export default function GamePage() {
   const handleCardRevealed = () => {
     if (!currentCard || !gameState) return;
 
-    // Update card to revealed
     setCurrentCard({ ...currentCard, isRevealed: true });
 
-    // Play win or lose sound
     if (currentCard.isWin) {
       AudioManager.playWin();
 
@@ -108,7 +100,6 @@ export default function GamePage() {
         const newState = addWord(gameState, nextWord);
         setGameState(newState);
 
-        // Check if game is complete
         if (newState.isComplete) {
           setTimeout(() => {
             AudioManager.playComplete();
@@ -149,9 +140,7 @@ export default function GamePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl mb-4" style={{ color: 'var(--valentine-red)' }}>
-            Loading...
-          </div>
+          <div className="text-lg text-zinc-500">Loading...</div>
         </div>
       </div>
     );
@@ -160,12 +149,12 @@ export default function GamePage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
-          <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--valentine-dark-red)' }}>
+        <div className="card max-w-md w-full p-8 text-center">
+          <h1 className="font-display text-2xl font-semibold text-rose-800 mb-3">
             Oops!
           </h1>
-          <p className="text-lg mb-6 text-gray-600">{error}</p>
-          <button onClick={handleBackToHome} className="btn-primary">
+          <p className="text-zinc-500 mb-6">{error}</p>
+          <button onClick={handleBackToHome} className="btn btn-primary">
             Go Back Home
           </button>
         </div>
@@ -176,24 +165,22 @@ export default function GamePage() {
   if (gameState?.isComplete) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
-          <h1 className="text-4xl font-bold mb-6" style={{ color: 'var(--valentine-dark-red)' }}>
-            🎉 Congratulations! 🎉
+        <div className="card max-w-lg w-full p-8 text-center">
+          <h1 className="font-display text-3xl font-semibold text-rose-800 mb-6">
+            Congratulations!
           </h1>
-          <div className="mb-6">
-            <p className="text-sm font-semibold mb-3" style={{ color: 'var(--valentine-red)' }}>
-              Your complete message:
-            </p>
-            <p className="text-2xl font-bold italic" style={{ color: 'var(--valentine-dark-red)' }}>
-              "{decodedMessage}"
+          <div className="mb-8">
+            <p className="text-sm text-zinc-500 mb-4">Your complete message:</p>
+            <p className="font-display text-xl text-rose-700 italic px-5 py-6 rounded-2xl bg-rose-50">
+              &ldquo;{decodedMessage}&rdquo;
             </p>
           </div>
-          <div className="flex gap-4 justify-center">
-            <button onClick={handleReset} className="btn-secondary">
+          <div className="flex gap-3 justify-center">
+            <button onClick={handleReset} className="btn btn-secondary">
               Play Again
             </button>
-            <button onClick={handleBackToHome} className="btn-primary">
-              Create New Message
+            <button onClick={handleBackToHome} className="btn btn-primary">
+              Create New
             </button>
           </div>
         </div>
@@ -202,63 +189,71 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-10">
+    <div className="min-h-screen flex items-center justify-center p-4 py-8">
+      <div className="card max-w-2xl w-full p-6 sm:p-8">
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: 'var(--valentine-dark-red)' }}>
-            💝 Scratch to Win Words!
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-rose-800 mb-2">
+            Scratch to Win
           </h1>
-          <p className="text-lg" style={{ color: 'var(--valentine-red)' }}>
-            Match your number to win a word from the secret message
+          <p className="text-sm text-zinc-500">
+            Match your number to win a word
           </p>
         </div>
 
-        {/* Progress section */}
-        <div className="mb-8 p-6 rounded-2xl" style={{ backgroundColor: 'var(--valentine-lavender)' }}>
-          <h2 className="font-bold mb-4" style={{ color: 'var(--valentine-dark-red)' }}>
-            Words Collected: <span style={{ color: 'var(--valentine-red)' }}>
-              {gameState?.collectedWords.length || 0}/{words.length}
+        {/* Progress */}
+        <div className="progress-box mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium text-zinc-700">Words Collected</span>
+            <span className="text-sm font-semibold text-rose-600">
+              {gameState?.collectedWords.length || 0} / {words.length}
             </span>
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {gameState?.collectedWords.map((word, index) => (
-              <div key={index} className="word-pill">
-                {word}
-              </div>
-            ))}
           </div>
+          {gameState && gameState.collectedWords.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {gameState.collectedWords.map((word, index) => (
+                <span key={index} className="word-pill">
+                  {word}
+                </span>
+              ))}
+            </div>
+          )}
+          {gameState && gameState.collectedWords.length === 0 && (
+            <p className="text-sm text-zinc-400">Win cards to reveal words from the secret message</p>
+          )}
         </div>
 
-        {/* Scratcher cards */}
+        {/* Scratcher Cards */}
         <div className="mb-8">
           {currentCard && !currentCard.isRevealed && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div className="flex justify-center">
                 <NumberScratcher number={currentCard.yourNumber} isRevealed={false} />
               </div>
               <div className="flex justify-center">
                 <PrizeScratcher prizeNumbers={currentCard.prizeNumbers} onAllRevealed={handleCardRevealed} isRevealed={false} />
               </div>
-              <div className="text-center text-sm text-gray-500">
-                Scratch all cards to reveal the result!
-              </div>
+              <p className="text-center text-sm text-zinc-400">
+                Scratch all cards to reveal the result
+              </p>
             </div>
           )}
+
           {currentCard && currentCard.isRevealed && (
-            <div className="text-center p-8 rounded-2xl" style={{ backgroundColor: currentCard.isWin ? '#e8f5e9' : '#ffebee' }}>
-              <p className="text-3xl font-bold mb-4" style={{ color: currentCard.isWin ? 'var(--win-color)' : 'var(--lose-color)' }}>
-                {currentCard.isWin ? '🎉 You Won a Word!' : '😔 No Match - Try Again'}
+            <div className={`text-center p-6 ${currentCard.isWin ? 'result-win' : 'result-lose'}`}>
+              <p className={`text-xl font-semibold mb-4 ${currentCard.isWin ? 'text-emerald-600' : 'text-red-600'}`}>
+                {currentCard.isWin ? 'You Won a Word!' : 'No Match — Try Again'}
               </p>
-              <div className="mb-6 space-y-2">
-                <p className="text-lg">Your Number: <span className="font-bold">{currentCard.yourNumber}</span></p>
-                <p className="text-lg">Prize Numbers: <span className="font-bold">{currentCard.prizeNumbers.join(', ')}</span></p>
+              <div className="mb-5 space-y-1 text-sm text-zinc-600">
+                <p>Your Number: <span className="font-semibold">{currentCard.yourNumber}</span></p>
+                <p>Prize Numbers: <span className="font-semibold">{currentCard.prizeNumbers.join(', ')}</span></p>
               </div>
               {currentCard.isWin && gameState && (
-                <p className="text-lg mb-6 font-semibold" style={{ color: 'var(--valentine-red)' }}>
-                  New word collected: "{gameState.collectedWords[gameState.collectedWords.length - 1]}"
+                <p className="text-sm font-medium text-rose-600 mb-5">
+                  New word: &ldquo;{gameState.collectedWords[gameState.collectedWords.length - 1]}&rdquo;
                 </p>
               )}
-              <button onClick={handleNewCard} className="btn-primary text-lg px-8 py-3">
+              <button onClick={handleNewCard} className="btn btn-primary">
                 {gameState?.isComplete ? 'See Final Message' : 'Try Another Card'}
               </button>
             </div>
@@ -266,20 +261,18 @@ export default function GamePage() {
         </div>
 
         {/* Controls */}
-        <div className="flex gap-4 justify-center">
-          <button onClick={handleReset} className="btn-secondary">
-            Reset Progress
+        <div className="flex gap-3 justify-center pt-6 border-t border-zinc-100">
+          <button onClick={handleReset} className="btn btn-ghost text-sm">
+            Reset
           </button>
-          <button onClick={handleBackToHome} className="btn-secondary">
-            Back to Home
+          <button onClick={handleBackToHome} className="btn btn-ghost text-sm">
+            Home
           </button>
         </div>
       </div>
 
-      {/* Confetti effect */}
       <Confetti isActive={showConfetti} />
 
-      {/* Share modal */}
       <ShareModal
         isOpen={showShareModal}
         message={decodedMessage || ''}
