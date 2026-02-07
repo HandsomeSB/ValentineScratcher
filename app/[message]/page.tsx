@@ -9,8 +9,10 @@ import { AudioManager } from '@/lib/audioManager';
 import Card from '@/components/Card';
 import Confetti from '@/components/Confetti';
 import ShareModal from '@/components/ShareModal';
+import AnnouncementModal from '@/components/AnnouncementModal';
+import CardStack from '@/components/CardStack';
 
-interface ScratcherCard {
+export interface ScratcherCard {
   id: number;
   yourNumber: number;
   prizeNumbers: number[];
@@ -31,6 +33,9 @@ export default function GamePage() {
   const [error, setError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [cardHistory, setCardHistory] = useState<ScratcherCard[]>([]);
+  const [cardAnimationState, setCardAnimationState] = useState<'entering' | 'active' | 'exiting'>('active');
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
 
   useEffect(() => {
     AudioManager.init();
@@ -83,12 +88,20 @@ export default function GamePage() {
       isRevealed: false,
       isWin,
     });
+
+    setCardAnimationState('entering');
+
+    // Transition to active after entrance animation completes
+    setTimeout(() => {
+      setCardAnimationState('active');
+    }, 600); // Match cardSlideIn duration
   };
 
   const handleCardRevealed = () => {
     if (!currentCard || !gameState) return;
 
     setCurrentCard({ ...currentCard, isRevealed: true });
+    setShowAnnouncement(true); // Show popup overlay
 
     if (currentCard.isWin) {
       AudioManager.playWin();
@@ -113,8 +126,25 @@ export default function GamePage() {
   };
 
   const handleNewCard = () => {
-    if (gameState?.isComplete) return;
-    generateNewCard();
+    if (gameState?.isComplete || !currentCard) return;
+
+    // Close announcement
+    setShowAnnouncement(false);
+
+    // Start exit animation
+    setCardAnimationState('exiting');
+
+    // Wait for exit animation to complete
+    setTimeout(() => {
+      // Add current card to history (limit to 15 cards)
+      setCardHistory((prev) => {
+        const newHistory = [...prev, currentCard];
+        return newHistory.slice(-15); // Keep only last 15 cards
+      });
+
+      // Generate new card (this will set state to 'entering')
+      generateNewCard();
+    }, 500); // Match cardSlideToStack duration
   };
 
   const handleReset = () => {
@@ -128,6 +158,8 @@ export default function GamePage() {
     setGameState(state);
     setShowConfetti(false);
     setShowShareModal(false);
+    setShowAnnouncement(false);
+    setCardHistory([]);
     generateNewCard();
   };
 
@@ -188,9 +220,60 @@ export default function GamePage() {
   }
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center p-4 py-8">
-        {/* Progress */}
-        <div className="progress-box mb-8">
+    <div className="game-container">
+      {/* Left Column: Card Stack */}
+      <div className="card-stack-column">
+        <CardStack cards={cardHistory} />
+      </div>
+
+      {/* Center Column: Active Card */}
+      <div className="card-area">
+        {currentCard && !currentCard.isRevealed && (
+          <div
+            className={`space-y-4 w-full max-w-md px-4 card-${cardAnimationState}`}
+          >
+            <Card
+              yourNumber={currentCard.yourNumber}
+              prizeNumbers={currentCard.prizeNumbers}
+              onAllRevealed={handleCardRevealed}
+              isRevealed={false}
+            />
+            <p className="text-center text-sm text-zinc-400">
+              Scratch all cards to reveal the result
+            </p>
+          </div>
+        )}
+
+        {currentCard && currentCard.isRevealed && (
+          <div
+            className={`space-y-4 w-full max-w-md px-4 card-${cardAnimationState}`}
+          >
+            <Card
+              yourNumber={currentCard.yourNumber}
+              prizeNumbers={currentCard.prizeNumbers}
+              onAllRevealed={handleCardRevealed}
+              isRevealed={true}
+            />
+            <p className="text-center text-sm text-zinc-400">
+              {currentCard.isWin ? 'You matched a number!' : 'No match this time'}
+            </p>
+          </div>
+        )}
+
+        {/* Controls */}
+        <div className="absolute bottom-0 left-0 right-0 flex gap-3 justify-center pb-6">
+          <button onClick={handleReset} className="btn btn-ghost text-sm">
+            Reset
+          </button>
+          <button onClick={handleBackToHome} className="btn btn-ghost text-sm">
+            Home
+          </button>
+        </div>
+      </div>
+
+      {/* Right Column: Progress */}
+      <div className="progress-section">
+        <div className="progress-box">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-zinc-700">Words Collected</span>
             <span className="text-sm font-semibold text-rose-600">
@@ -207,54 +290,27 @@ export default function GamePage() {
             </div>
           )}
           {gameState && gameState.collectedWords.length === 0 && (
-            <p className="text-sm text-zinc-400">Win cards to reveal words from the secret message</p>
+            <p className="text-sm text-zinc-400">
+              Win cards to reveal words from the secret message
+            </p>
           )}
         </div>
+      </div>
 
-        {/* Scratcher Cards */}
-        {currentCard && !currentCard.isRevealed && (
-          <div className="space-y-4 w-full max-w-md px-4">
-              <Card
-                yourNumber={currentCard.yourNumber}
-                prizeNumbers={currentCard.prizeNumbers}
-                onAllRevealed={handleCardRevealed}
-                isRevealed={false}
-              />
-            <p className="text-center text-sm text-zinc-400">
-              Scratch all cards to reveal the result
-            </p>
-          </div>
-        )}
-
-        {currentCard && currentCard.isRevealed && (
-          <div className={`text-center p-6 ${currentCard.isWin ? 'result-win' : 'result-lose'}`}>
-            <p className={`text-xl font-semibold mb-4 ${currentCard.isWin ? 'text-emerald-600' : 'text-red-600'}`}>
-              {currentCard.isWin ? 'You Won a Word!' : 'No Match — Try Again'}
-            </p>
-            <div className="mb-5 space-y-1 text-sm text-zinc-600">
-              <p>Your Number: <span className="font-semibold">{currentCard.yourNumber}</span></p>
-              <p>Prize Numbers: <span className="font-semibold">{currentCard.prizeNumbers.join(', ')}</span></p>
-            </div>
-            {currentCard.isWin && gameState && (
-              <p className="text-sm font-medium text-rose-600 mb-5">
-                New word: &ldquo;{gameState.collectedWords[gameState.collectedWords.length - 1]}&rdquo;
-              </p>
-            )}
-            <button onClick={handleNewCard} className="btn btn-primary">
-              {gameState?.isComplete ? 'See Final Message' : 'Try Another Card'}
-            </button>
-          </div>
-        )}
-
-        {/* Controls */}
-        <div className="flex gap-3 justify-center pt-6 border-t border-zinc-100">
-          <button onClick={handleReset} className="btn btn-ghost text-sm">
-            Reset
-          </button>
-          <button onClick={handleBackToHome} className="btn btn-ghost text-sm">
-            Home
-          </button>
-        </div>
+      {/* Modals & Effects */}
+      <AnnouncementModal
+        isOpen={showAnnouncement}
+        isWin={currentCard?.isWin || false}
+        yourNumber={currentCard?.yourNumber || 0}
+        prizeNumbers={currentCard?.prizeNumbers || []}
+        newWord={
+          currentCard?.isWin && gameState
+            ? gameState.collectedWords[gameState.collectedWords.length - 1]
+            : undefined
+        }
+        onNewCard={handleNewCard}
+        isGameComplete={gameState?.isComplete || false}
+      />
 
       <Confetti isActive={showConfetti} />
 
