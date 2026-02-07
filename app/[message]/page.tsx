@@ -10,7 +10,6 @@ import Card from '@/components/Card';
 import Confetti from '@/components/Confetti';
 import ShareModal from '@/components/ShareModal';
 import AnnouncementModal from '@/components/AnnouncementModal';
-import CardStack from '@/components/CardStack';
 
 export interface ScratcherCard {
   id: number;
@@ -18,6 +17,7 @@ export interface ScratcherCard {
   prizeNumbers: number[];
   isRevealed: boolean;
   isWin: boolean;
+  isActive: boolean; // true = center position, false = in stack
 }
 
 export default function GamePage() {
@@ -28,14 +28,16 @@ export default function GamePage() {
   const [decodedMessage, setDecodedMessage] = useState<string | null>(null);
   const [words, setWords] = useState<string[]>([]);
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [currentCard, setCurrentCard] = useState<ScratcherCard | null>(null);
+  const [cards, setCards] = useState<ScratcherCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [cardHistory, setCardHistory] = useState<ScratcherCard[]>([]);
-  const [cardAnimationState, setCardAnimationState] = useState<'entering' | 'active' | 'exiting'>('active');
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [enteringCardId, setEnteringCardId] = useState<number | null>(null);
+
+  const activeCard = cards.find(c => c.isActive);
+  const stackedCards = cards.filter(c => !c.isActive);
 
   useEffect(() => {
     AudioManager.init();
@@ -67,7 +69,7 @@ export default function GamePage() {
     setGameState(state);
 
     if (!state.isComplete) {
-      generateNewCard();
+      createNewCard();
     } else {
       setShowShareModal(true);
       setShowConfetti(true);
@@ -76,34 +78,40 @@ export default function GamePage() {
     setIsLoading(false);
   }, [encodedMessage]);
 
-  const generateNewCard = () => {
+  const createNewCard = () => {
     const yourNumber = generateRandomNumber();
     const prizeNumbers = generatePrizeNumbers();
     const isWin = checkWin(yourNumber, prizeNumbers);
+    const newId = Date.now();
 
-    setCurrentCard({
-      id: Date.now(),
+    const newCard: ScratcherCard = {
+      id: newId,
       yourNumber,
       prizeNumbers,
       isRevealed: false,
       isWin,
-    });
+      isActive: true,
+    };
 
-    setCardAnimationState('entering');
+    setCards(prev => [...prev, newCard]);
+    setEnteringCardId(newId);
 
-    // Transition to active after entrance animation completes
+    // Clear entering state after animation
     setTimeout(() => {
-      setCardAnimationState('active');
-    }, 600); // Match cardSlideIn duration
+      setEnteringCardId(null);
+    }, 500);
   };
 
   const handleCardRevealed = () => {
-    if (!currentCard || !gameState) return;
+    if (!activeCard || !gameState) return;
 
-    setCurrentCard({ ...currentCard, isRevealed: true });
-    setShowAnnouncement(true); // Show popup overlay
+    // Mark the active card as revealed
+    setCards(prev => prev.map(c =>
+      c.id === activeCard.id ? { ...c, isRevealed: true } : c
+    ));
+    setShowAnnouncement(true);
 
-    if (currentCard.isWin) {
+    if (activeCard.isWin) {
       AudioManager.playWin();
 
       const nextWord = words.find((word) => !gameState.collectedWords.includes(word));
@@ -126,25 +134,30 @@ export default function GamePage() {
   };
 
   const handleNewCard = () => {
-    if (gameState?.isComplete || !currentCard) return;
+    if (gameState?.isComplete || !activeCard) return;
 
     // Close announcement
     setShowAnnouncement(false);
 
-    // Start exit animation
-    setCardAnimationState('exiting');
+    // Move active card to stack (this triggers the CSS transition)
+    setCards(prev => prev.map(c =>
+      c.id === activeCard.id ? { ...c, isActive: false } : c
+    ));
 
-    // Wait for exit animation to complete
+    // Create new card after a brief delay for the transition
     setTimeout(() => {
-      // Add current card to history (limit to 15 cards)
-      setCardHistory((prev) => {
-        const newHistory = [...prev, currentCard];
-        return newHistory.slice(-15); // Keep only last 15 cards
+      // Limit stack to 15 cards
+      setCards(prev => {
+        const stacked = prev.filter(c => !c.isActive);
+        if (stacked.length > 15) {
+          const toRemove = stacked.slice(0, stacked.length - 15);
+          return prev.filter(c => !toRemove.some(r => r.id === c.id));
+        }
+        return prev;
       });
 
-      // Generate new card (this will set state to 'entering')
-      generateNewCard();
-    }, 500); // Match cardSlideToStack duration
+      createNewCard();
+    }, 500);
   };
 
   const handleReset = () => {
@@ -159,8 +172,8 @@ export default function GamePage() {
     setShowConfetti(false);
     setShowShareModal(false);
     setShowAnnouncement(false);
-    setCardHistory([]);
-    generateNewCard();
+    setCards([]);
+    createNewCard();
   };
 
   const handleBackToHome = () => {
@@ -220,58 +233,48 @@ export default function GamePage() {
   }
 
   return (
-    <div className="game-container">
-      {/* Left Column: Card Stack */}
-      <div className="card-stack-column">
-        <CardStack cards={cardHistory} />
+    <div className="game-layout">
+      {/* Single container for all cards */}
+      <div className="cards-container">
+        {/* Render all cards in the same container */}
+        {cards.map((card) => {
+          const stackIndex = card.isActive
+            ? -1
+            : stackedCards.findIndex(c => c.id === card.id);
+
+          return (
+            <div
+              key={card.id}
+              className={`game-card ${
+                card.isActive
+                  ? `game-card-active ${enteringCardId === card.id ? 'game-card-entering' : ''}`
+                  : 'game-card-stacked'
+              }`}
+              style={{
+                '--stack-index': stackIndex,
+                '--stack-count': stackedCards.length,
+              } as React.CSSProperties}
+            >
+              <Card
+                yourNumber={card.yourNumber}
+                prizeNumbers={card.prizeNumbers}
+                onAllRevealed={card.isActive ? handleCardRevealed : undefined}
+                isRevealed={card.isRevealed}
+              />
+              {card.isActive && (
+                <p className="game-card-status text-sm text-zinc-400">
+                  {card.isRevealed
+                    ? (card.isWin ? 'You matched a number!' : 'No match this time')
+                    : 'Scratch all cards to reveal the result'
+                  }
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Center Column: Active Card */}
-      <div className="card-area">
-        {currentCard && !currentCard.isRevealed && (
-          <div
-            className={`space-y-4 w-full max-w-md px-4 card-${cardAnimationState}`}
-          >
-            <Card
-              yourNumber={currentCard.yourNumber}
-              prizeNumbers={currentCard.prizeNumbers}
-              onAllRevealed={handleCardRevealed}
-              isRevealed={false}
-            />
-            <p className="text-center text-sm text-zinc-400">
-              Scratch all cards to reveal the result
-            </p>
-          </div>
-        )}
-
-        {currentCard && currentCard.isRevealed && (
-          <div
-            className={`space-y-4 w-full max-w-md px-4 card-${cardAnimationState}`}
-          >
-            <Card
-              yourNumber={currentCard.yourNumber}
-              prizeNumbers={currentCard.prizeNumbers}
-              onAllRevealed={handleCardRevealed}
-              isRevealed={true}
-            />
-            <p className="text-center text-sm text-zinc-400">
-              {currentCard.isWin ? 'You matched a number!' : 'No match this time'}
-            </p>
-          </div>
-        )}
-
-        {/* Controls */}
-        <div className="absolute bottom-0 left-0 right-0 flex gap-3 justify-center pb-6">
-          <button onClick={handleReset} className="btn btn-ghost text-sm">
-            Reset
-          </button>
-          <button onClick={handleBackToHome} className="btn btn-ghost text-sm">
-            Home
-          </button>
-        </div>
-      </div>
-
-      {/* Right Column: Progress */}
+      {/* Progress Section */}
       <div className="progress-section">
         <div className="progress-box">
           <div className="flex items-center justify-between mb-4">
@@ -295,16 +298,26 @@ export default function GamePage() {
             </p>
           )}
         </div>
+
+        {/* Controls */}
+        <div className="flex gap-3 justify-center mt-6">
+          <button onClick={handleReset} className="btn btn-ghost text-sm">
+            Reset
+          </button>
+          <button onClick={handleBackToHome} className="btn btn-ghost text-sm">
+            Home
+          </button>
+        </div>
       </div>
 
       {/* Modals & Effects */}
       <AnnouncementModal
         isOpen={showAnnouncement}
-        isWin={currentCard?.isWin || false}
-        yourNumber={currentCard?.yourNumber || 0}
-        prizeNumbers={currentCard?.prizeNumbers || []}
+        isWin={activeCard?.isWin || false}
+        yourNumber={activeCard?.yourNumber || 0}
+        prizeNumbers={activeCard?.prizeNumbers || []}
         newWord={
-          currentCard?.isWin && gameState
+          activeCard?.isWin && gameState
             ? gameState.collectedWords[gameState.collectedWords.length - 1]
             : undefined
         }

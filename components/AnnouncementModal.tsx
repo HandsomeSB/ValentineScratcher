@@ -23,8 +23,8 @@ export default function AnnouncementModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop"
-      style={{ backgroundColor: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(4px)' }}
+      className="fixed inset-0 flex items-center justify-center p-4 modal-backdrop"
+      style={{ backgroundColor: 'rgba(24, 24, 27, 0.6)', backdropFilter: 'blur(4px)', zIndex: 200 }}
     >
       <div
         className={`announcement-popup p-6 ${isWin ? 'result-win' : 'result-lose'}`}
