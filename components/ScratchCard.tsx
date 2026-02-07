@@ -47,7 +47,9 @@ export default function ScratchCard({
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = GAME_CONFIG.VALENTINE_DARK_RED;
-    ctx.font = 'bold 32px Arial';
+    // Scale font size proportionally to canvas height
+    const fontSize = Math.max(Math.min(height * 0.45, 48), 16);
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, width / 2, height / 2);
@@ -202,7 +204,13 @@ export default function ScratchCard({
           borderColor: GAME_CONFIG.VALENTINE_PINK,
         }}
       >
-        <div className="text-3xl font-bold text-center px-4" style={{ color: GAME_CONFIG.VALENTINE_DARK_RED }}>
+        <div
+          className="font-bold text-center px-2"
+          style={{
+            color: GAME_CONFIG.VALENTINE_DARK_RED,
+            fontSize: `${Math.max(Math.min(height * 0.45, 48), 16)}px`,
+          }}
+        >
           {text}
         </div>
       </div>

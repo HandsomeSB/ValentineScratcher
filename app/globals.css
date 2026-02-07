@@ -314,6 +314,74 @@ input.form-input[readonly] {
 }
 
 /* ============================================
+   SCRATCH CARD CONTAINER
+   ============================================ */
+.scratch-card-container {
+  background: linear-gradient(145deg, #ffffff 0%, #fff8f9 100%);
+  border: 2px solid #fecdd3;
+  border-radius: 0px;
+  padding: 24px;
+  box-shadow:
+    0 4px 12px rgba(225, 29, 72, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.your-number-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9f1239;
+  margin-bottom: 12px;
+}
+
+.your-number-card {
+  display: flex;
+  justify-content: center;
+}
+
+.card-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.card-divider::before,
+.card-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #fda4af, transparent);
+}
+
+.divider-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #be123c;
+  white-space: nowrap;
+}
+
+.prize-numbers-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 640px) {
@@ -323,5 +391,13 @@ input.form-input[readonly] {
 
   .btn {
     padding: 14px 24px;
+  }
+
+  .scratch-card-container {
+    padding: 20px 16px;
+  }
+
+  .prize-grid {
+    gap: 8px;
   }
 }

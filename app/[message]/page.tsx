@@ -6,8 +6,7 @@ import { decodeMessage, isValidEncodedMessage } from '@/lib/urlEncoder';
 import { getOrCreateGameState, addWord, resetGameState, GameState } from '@/lib/gameState';
 import { generateRandomNumber, generatePrizeNumbers, checkWin } from '@/lib/config';
 import { AudioManager } from '@/lib/audioManager';
-import NumberScratcher from '@/components/NumberScratcher';
-import PrizeScratcher from '@/components/PrizeScratcher';
+import Card from '@/components/Card';
 import Confetti from '@/components/Confetti';
 import ShareModal from '@/components/ShareModal';
 
@@ -189,18 +188,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 py-8">
-      <div className="card max-w-2xl w-full p-6 sm:p-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-rose-800 mb-2">
-            Scratch to Win
-          </h1>
-          <p className="text-sm text-zinc-500">
-            Match your number to win a word
-          </p>
-        </div>
-
+    <div className="h-screen flex flex-col items-center justify-center p-4 py-8">
         {/* Progress */}
         <div className="progress-box mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -224,41 +212,39 @@ export default function GamePage() {
         </div>
 
         {/* Scratcher Cards */}
-        <div className="mb-8">
-          {currentCard && !currentCard.isRevealed && (
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <NumberScratcher number={currentCard.yourNumber} isRevealed={false} />
-              </div>
-              <div className="flex justify-center">
-                <PrizeScratcher prizeNumbers={currentCard.prizeNumbers} onAllRevealed={handleCardRevealed} isRevealed={false} />
-              </div>
-              <p className="text-center text-sm text-zinc-400">
-                Scratch all cards to reveal the result
-              </p>
-            </div>
-          )}
+        {currentCard && !currentCard.isRevealed && (
+          <div className="space-y-4 w-full max-w-md px-4">
+              <Card
+                yourNumber={currentCard.yourNumber}
+                prizeNumbers={currentCard.prizeNumbers}
+                onAllRevealed={handleCardRevealed}
+                isRevealed={false}
+              />
+            <p className="text-center text-sm text-zinc-400">
+              Scratch all cards to reveal the result
+            </p>
+          </div>
+        )}
 
-          {currentCard && currentCard.isRevealed && (
-            <div className={`text-center p-6 ${currentCard.isWin ? 'result-win' : 'result-lose'}`}>
-              <p className={`text-xl font-semibold mb-4 ${currentCard.isWin ? 'text-emerald-600' : 'text-red-600'}`}>
-                {currentCard.isWin ? 'You Won a Word!' : 'No Match — Try Again'}
-              </p>
-              <div className="mb-5 space-y-1 text-sm text-zinc-600">
-                <p>Your Number: <span className="font-semibold">{currentCard.yourNumber}</span></p>
-                <p>Prize Numbers: <span className="font-semibold">{currentCard.prizeNumbers.join(', ')}</span></p>
-              </div>
-              {currentCard.isWin && gameState && (
-                <p className="text-sm font-medium text-rose-600 mb-5">
-                  New word: &ldquo;{gameState.collectedWords[gameState.collectedWords.length - 1]}&rdquo;
-                </p>
-              )}
-              <button onClick={handleNewCard} className="btn btn-primary">
-                {gameState?.isComplete ? 'See Final Message' : 'Try Another Card'}
-              </button>
+        {currentCard && currentCard.isRevealed && (
+          <div className={`text-center p-6 ${currentCard.isWin ? 'result-win' : 'result-lose'}`}>
+            <p className={`text-xl font-semibold mb-4 ${currentCard.isWin ? 'text-emerald-600' : 'text-red-600'}`}>
+              {currentCard.isWin ? 'You Won a Word!' : 'No Match — Try Again'}
+            </p>
+            <div className="mb-5 space-y-1 text-sm text-zinc-600">
+              <p>Your Number: <span className="font-semibold">{currentCard.yourNumber}</span></p>
+              <p>Prize Numbers: <span className="font-semibold">{currentCard.prizeNumbers.join(', ')}</span></p>
             </div>
-          )}
-        </div>
+            {currentCard.isWin && gameState && (
+              <p className="text-sm font-medium text-rose-600 mb-5">
+                New word: &ldquo;{gameState.collectedWords[gameState.collectedWords.length - 1]}&rdquo;
+              </p>
+            )}
+            <button onClick={handleNewCard} className="btn btn-primary">
+              {gameState?.isComplete ? 'See Final Message' : 'Try Another Card'}
+            </button>
+          </div>
+        )}
 
         {/* Controls */}
         <div className="flex gap-3 justify-center pt-6 border-t border-zinc-100">
@@ -269,7 +255,6 @@ export default function GamePage() {
             Home
           </button>
         </div>
-      </div>
 
       <Confetti isActive={showConfetti} />
 
