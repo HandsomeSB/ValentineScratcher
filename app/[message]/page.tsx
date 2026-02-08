@@ -210,12 +210,8 @@ export default function GamePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="card max-w-lg w-full p-8 text-center">
-          <h1 className="font-display text-3xl font-semibold text-rose-800 mb-6">
-            Congratulations!
-          </h1>
           <div className="mb-8">
-            <p className="text-sm text-zinc-500 mb-4">Your complete message:</p>
-            <p className="font-display text-xl text-rose-700 italic px-5 py-6 rounded-2xl bg-rose-50">
+            <p className="font-display text-xl text-rose-700 italic px-10 py-12 rounded-2xl bg-rose-50">
               &ldquo;{decodedMessage}&rdquo;
             </p>
           </div>
